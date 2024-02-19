@@ -1,8 +1,11 @@
 let playerSelection,
-    computerSelection;
+    computerSelection,
+    roundResult,
+    gameCanceled;
 
 let playerWins = 0,
-    computerWins = 0;
+    computerWins = 0,
+    roundCount = 0;
 
 function convertPlayerSelection(playerSelection) {
     playerSelection = playerSelection.trim();
@@ -24,31 +27,48 @@ function getComputerChoice() {
 }
 
 function playRound(playerSelection, computerSelection) {
-    playerSelection = convertPlayerSelection(prompt('Choose Rock, Paper, or Scissors:'));
-    computerSelection = getComputerChoice();
     if (playerSelection === computerSelection) {
         ++playerWins;
         ++computerWins;
-        return `\nTie! Both computer and you chose ${playerSelection}!\n `;
+        roundResult = `\nTie! Both computer and you chose ${playerSelection}!\n `;
     } else if (
         (playerSelection === 'Rock' && computerSelection === 'Scissors') ||
         (playerSelection === 'Paper' && computerSelection === 'Rock') ||
         (playerSelection === 'Scissors' && computerSelection === 'Paper')
     ) {
         ++playerWins;
-        return `\nYou win! ${playerSelection} beat(s) ${computerSelection}!\n `;
+        roundResult = `\nYou win! ${playerSelection} beat(s) ${computerSelection}!\n `;
     } else {
         ++computerWins;
-        return `\nComputer wins! ${computerSelection} beat(s) ${playerSelection}!\n `;
+        roundResult = `\nComputer wins! ${computerSelection} beat(s) ${playerSelection}!\n `;
     }
 }
 
 function playGame() {
-    for (let i = 0; i < 5; i++) {
-        console.log(`${playRound(playerSelection, computerSelection)}\n     SCORE      \n----------------\n You   Computer \n----------------\n  ${playerWins}       ${computerWins} \n----------------`
-        );
-    }
-    if (playerWins === computerWins) {
+    while (roundCount < 5) {
+        playerSelection = prompt('Choose Rock, Paper, or Scissors:');
+        if (playerSelection === null) {
+            alert('Game canceled. Reload the page to start again.');
+            roundCount = 5;
+            gameCanceled = true;
+        } else if (playerSelection == '') {
+            alert('Please enter a valid choice!');
+        } else {
+            playerSelection = convertPlayerSelection(playerSelection);
+            computerSelection = getComputerChoice();
+            if (playerSelection === 'Rock' || playerSelection === 'Paper' || playerSelection === 'Scissors') {
+                playRound(playerSelection, computerSelection);
+                console.log(
+                    `${roundResult}\n     SCORE      \n----------------\n You   Computer \n----------------\n  ${playerWins}       ${computerWins} \n----------------`
+                );
+                ++roundCount;
+            } else {
+                alert('Please enter a valid choice!');
+            }
+        }
+    } if (gameCanceled === true) {
+        console.log('Game canceled. Reload the page to start again.')
+    } else if (playerWins === computerWins) {
         console.log('\nIt\'s a tie! Reload the page to try again.');
     } else if (playerWins > computerWins) {
         console.log('\nCongratulations! You beat computer! Reload the page to try again.');
